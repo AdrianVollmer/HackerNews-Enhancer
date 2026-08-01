@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "HN Enhancer",
+  "version": "1.0.0",
+  "description": "Dark theme, comment highlighter, collapse bars, parent tooltips for Hacker News.",
+  "icons": { "48": "icons/icon.svg" },
+  "content_scripts": [
+    {
+      "matches": ["*://news.ycombinator.com/*"],
+      "css": ["styles.css"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": ["storage"]
+}
