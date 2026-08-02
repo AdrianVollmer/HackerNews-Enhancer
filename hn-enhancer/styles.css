@@ -1,1 +1,94 @@
 /* hn-enhancer/styles.css */
+
+/* ── Panel button ──────────────────────────────────────────────────────── */
+#hn-ext-btn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 102, 0, 0.12);
+  border: 1px solid rgba(255, 102, 0, 0.35);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #ff6600;
+  z-index: 9999;
+  user-select: none;
+  transition: background 0.15s;
+}
+#hn-ext-btn:hover { background: rgba(255, 102, 0, 0.25); }
+
+/* ── Panel ─────────────────────────────────────────────────────────────── */
+#hn-ext-panel {
+  position: fixed;
+  top: 48px;
+  right: 12px;
+  width: 220px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  padding: 12px 14px;
+  z-index: 9998;
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+}
+#hn-ext-panel.hn-open { display: flex; }
+
+.hn-panel-label {
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #aaa;
+  margin-bottom: 6px;
+}
+.hn-panel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── Pill toggle ───────────────────────────────────────────────────────── */
+.hn-pill-toggle {
+  width: 34px;
+  height: 18px;
+  background: #ccc;
+  border-radius: 9px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.hn-pill-toggle.hn-on { background: #ff6600; }
+.hn-pill-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  transition: left 0.2s;
+}
+.hn-pill-toggle.hn-on::after { left: 18px; }
+
+/* ── Dark mode ─────────────────────────────────────────────────────────── */
+body.hn-dark { background-color: #1a1a1a !important; color: #d0d0c8 !important; }
+body.hn-dark a { color: #9999aa; }
+body.hn-dark a.hnuser { color: #e0e0d8 !important; }
+body.hn-dark .comhead { color: #606060; }
+body.hn-dark td[bgcolor="#f6f6ef"],
+body.hn-dark table[bgcolor="#f6f6ef"],
+body.hn-dark #hnmain { background-color: #1a1a1a !important; }
+body.hn-dark .commtext { color: #c0c0b8; }
+body.hn-dark #hn-ext-panel { background: #242424; border-color: #383838; color: #c8c8c0; }
+body.hn-dark .hn-panel-label { color: #666; }
