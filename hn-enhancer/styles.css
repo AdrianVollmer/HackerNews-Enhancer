@@ -92,3 +92,20 @@ body.hn-dark #hnmain { background-color: #1a1a1a !important; }
 body.hn-dark .commtext { color: #c0c0b8; }
 body.hn-dark #hn-ext-panel { background: #242424; border-color: #383838; color: #c8c8c0; }
 body.hn-dark .hn-panel-label { color: #666; }
+
+/* ── Slider ────────────────────────────────────────────────────────────── */
+#hn-age-slider { width: 100%; accent-color: #ff6600; cursor: pointer; margin: 2px 0; }
+.hn-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #bbb;
+  margin-top: 2px;
+}
+.hn-slider-value { font-size: 11px; color: #888; text-align: center; margin-top: 4px; min-height: 14px; }
+
+/* ── Comment highlight ─────────────────────────────────────────────────── */
+tr.hn-new-comment { background-color: #fffde8; }
+tr.hn-new-comment td.default { border-left: 3px solid #f0a000; }
+body.hn-dark tr.hn-new-comment { background-color: #221e00; }
+body.hn-dark tr.hn-new-comment td.default { border-left-color: #c08000; }

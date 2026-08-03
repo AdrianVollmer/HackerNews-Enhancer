@@ -106,12 +106,57 @@
     });
   }
 
+  // ── Slider ────────────────────────────────────────────────────────────────
+
+  function initSlider(rows) {
+    const timestamps = rows.map(getTimestamp).filter(t => t > 0);
+    if (timestamps.length === 0) return;
+
+    const minTs = Math.min(...timestamps);
+    const maxTs = Math.max(...timestamps);
+    const nowApprox = maxTs + 60;
+
+    const slider = document.getElementById('hn-age-slider');
+    if (!slider) return;
+    slider.min = String(minTs);
+    slider.max = String(maxTs);
+    slider.value = String(maxTs);
+
+    function formatAgo(ts) {
+      const mins = Math.round((nowApprox - ts) / 60);
+      if (mins < 60) return `${mins} min ago`;
+      const hours = Math.round(mins / 60);
+      if (hours < 24) return `${hours} hr ago`;
+      return `${Math.round(hours / 24)} day ago`;
+    }
+
+    document.getElementById('hn-lbl-old').textContent = formatAgo(minTs);
+
+    const display = document.getElementById('hn-slider-display');
+    slider.addEventListener('input', () => {
+      const val = parseInt(slider.value, 10);
+      if (val >= maxTs) {
+        display.textContent = 'No highlight';
+        rows.forEach(tr => tr.classList.remove('hn-new-comment'));
+      } else {
+        display.textContent = `Newer than: ${formatAgo(val)}`;
+        rows.forEach(tr => {
+          tr.classList.toggle('hn-new-comment', getTimestamp(tr) > val);
+        });
+      }
+    });
+  }
+
   // ── Init ───────────────────────────────────────────────────────────────────
 
   async function init() {
     const prefs = await loadPrefs();
     createPanel();
     applyDark(prefs.darkMode);
+    const rows = getCommentRows();
+    if (rows.length > 0) {
+      initSlider(rows);
+    }
     document.body.dataset.hnEnhancer = 'ready';
   }
 

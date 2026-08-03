@@ -64,3 +64,52 @@ def test_dark_mode_persisted(page: Page) -> None:
     page.add_script_tag(path="hn-enhancer/content.js")
     page.wait_for_selector("body[data-hn-enhancer='ready']", timeout=5000)
     assert page.evaluate("document.body.classList.contains('hn-dark')")
+
+
+def test_slider_exists(hn_page: Page) -> None:
+    assert hn_page.locator('#hn-age-slider').count() == 1
+
+def test_slider_range_matches_comment_timestamps(hn_page: Page) -> None:
+    min_val = int(hn_page.evaluate("document.getElementById('hn-age-slider').min"))
+    max_val = int(hn_page.evaluate("document.getElementById('hn-age-slider').max"))
+    assert min_val > 0
+    assert max_val > min_val
+
+def test_slider_default_no_highlight(hn_page: Page) -> None:
+    count = hn_page.evaluate(
+        "document.querySelectorAll('tr.hn-new-comment').length"
+    )
+    assert count == 0
+
+def test_slider_moved_left_highlights_newer_comments(hn_page: Page) -> None:
+    hn_page.evaluate("""
+        const s = document.getElementById('hn-age-slider');
+        s.value = s.min;
+        s.dispatchEvent(new Event('input'));
+    """)
+    count = hn_page.evaluate(
+        "document.querySelectorAll('tr.hn-new-comment').length"
+    )
+    assert count > 0
+
+def test_slider_display_updates(hn_page: Page) -> None:
+    hn_page.evaluate("""
+        const s = document.getElementById('hn-age-slider');
+        s.value = s.min;
+        s.dispatchEvent(new Event('input'));
+    """)
+    text = hn_page.locator('#hn-slider-display').inner_text()
+    assert 'Newer than' in text
+
+def test_slider_at_max_clears_highlights(hn_page: Page) -> None:
+    hn_page.evaluate("""
+        const s = document.getElementById('hn-age-slider');
+        s.value = s.min;
+        s.dispatchEvent(new Event('input'));
+        s.value = s.max;
+        s.dispatchEvent(new Event('input'));
+    """)
+    count = hn_page.evaluate(
+        "document.querySelectorAll('tr.hn-new-comment').length"
+    )
+    assert count == 0
