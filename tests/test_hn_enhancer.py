@@ -113,3 +113,44 @@ def test_slider_at_max_clears_highlights(hn_page: Page) -> None:
         "document.querySelectorAll('tr.hn-new-comment').length"
     )
     assert count == 0
+
+def test_collapse_bars_rendered(hn_page: Page) -> None:
+    count = hn_page.evaluate("document.querySelectorAll('.hn-cbar').length")
+    assert count > 0
+
+def test_native_toggle_hidden(hn_page: Page) -> None:
+    visible = hn_page.evaluate("""
+        Array.from(document.querySelectorAll('a.togg'))
+            .some(el => el.offsetParent !== null)
+    """)
+    assert not visible
+
+def test_collapse_hides_children(hn_page: Page) -> None:
+    first_bar = hn_page.locator('.hn-cbar').first
+    first_bar.click()
+    hn_page.wait_for_timeout(100)
+    hidden = hn_page.evaluate(
+        "document.querySelectorAll('tr.hn-hidden').length"
+    )
+    assert hidden > 0
+
+def test_expand_shows_children(hn_page: Page) -> None:
+    first_bar = hn_page.locator('.hn-cbar').first
+    first_bar.click()
+    hn_page.wait_for_timeout(100)
+    collapsed_bar = hn_page.locator('.hn-cbar.hn-collapsed').first
+    collapsed_bar.click()
+    hn_page.wait_for_timeout(100)
+    hidden = hn_page.evaluate(
+        "document.querySelectorAll('tr.hn-hidden').length"
+    )
+    assert hidden == 0
+
+def test_collapsed_bar_shows_count(hn_page: Page) -> None:
+    first_bar = hn_page.locator('.hn-cbar').first
+    first_bar.click()
+    hn_page.wait_for_timeout(100)
+    label = hn_page.locator('.hn-cbar-count').first
+    text = label.inner_text()
+    assert text.startswith('+')
+    assert int(text[1:]) > 0

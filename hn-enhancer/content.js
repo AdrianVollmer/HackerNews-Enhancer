@@ -147,15 +147,109 @@
     });
   }
 
+  // ── Collapse bars ──────────────────────────────────────────────────────────
+
+  function hideNativeToggles() {
+    const style = document.createElement('style');
+    style.textContent = 'a.togg { display: none !important; }';
+    document.head.appendChild(style);
+  }
+
+  let collapseOverlay = null;
+
+  function buildCollapseOverlay(rows) {
+    if (!collapseOverlay) {
+      collapseOverlay = document.createElement('div');
+      collapseOverlay.id = 'hn-collapse-overlay';
+      document.body.appendChild(collapseOverlay);
+    }
+    collapseOverlay.innerHTML = '';
+
+    const scrollY = window.scrollY;
+    const scrollX = window.scrollX;
+    const BAR_W = 6;
+    const GAP = 4;
+
+    rows.forEach((tr, i) => {
+      const subtreeIdxs = getSubtreeIndices(rows, i);
+      if (subtreeIdxs.length === 0) return;
+
+      const isCollapsed = tr.classList.contains('hn-collapsed');
+      const trRect = tr.getBoundingClientRect();
+      const topY = trRect.top + scrollY;
+
+      let botY;
+      if (isCollapsed) {
+        botY = topY + Math.max(trRect.height - 18, 10);
+      } else {
+        let lastVisible = tr;
+        for (const j of subtreeIdxs) {
+          if (!rows[j].classList.contains('hn-hidden')) lastVisible = rows[j];
+        }
+        botY = lastVisible.getBoundingClientRect().bottom + scrollY;
+      }
+
+      const height = botY - topY;
+      if (height < 4) return;
+
+      const indCell = tr.querySelector('td.ind');
+      if (!indCell) return;
+      const left = indCell.getBoundingClientRect().right + scrollX - BAR_W - GAP;
+
+      const bar = document.createElement('div');
+      bar.className = 'hn-cbar' + (isCollapsed ? ' hn-collapsed' : '');
+      bar.style.top = `${topY}px`;
+      bar.style.left = `${left}px`;
+      bar.style.height = `${height}px`;
+      bar.title = isCollapsed
+        ? `Expand ${subtreeIdxs.length} comment${subtreeIdxs.length !== 1 ? 's' : ''}`
+        : 'Collapse thread';
+
+      if (isCollapsed) {
+        const lbl = document.createElement('span');
+        lbl.className = 'hn-cbar-count';
+        lbl.textContent = `+${subtreeIdxs.length}`;
+        bar.appendChild(lbl);
+      }
+
+      bar.addEventListener('click', () => toggleCollapse(rows, i));
+      collapseOverlay.appendChild(bar);
+    });
+  }
+
+  function toggleCollapse(rows, rootIdx) {
+    const rootTr = rows[rootIdx];
+    const rootDepth = getDepth(rootTr);
+    const nowCollapsed = !rootTr.classList.contains('hn-collapsed');
+    rootTr.classList.toggle('hn-collapsed', nowCollapsed);
+    for (let j = rootIdx + 1; j < rows.length; j++) {
+      if (getDepth(rows[j]) > rootDepth) rows[j].classList.toggle('hn-hidden', nowCollapsed);
+      else break;
+    }
+    setTimeout(() => buildCollapseOverlay(rows), 30);
+  }
+
+  function initCollapseRebuild(rows) {
+    window.addEventListener('resize', () => buildCollapseOverlay(rows));
+    window.addEventListener('scroll', () => buildCollapseOverlay(rows), { passive: true });
+  }
+
   // ── Init ───────────────────────────────────────────────────────────────────
 
   async function init() {
     const prefs = await loadPrefs();
     createPanel();
     applyDark(prefs.darkMode);
+    // Anchor the absolute overlay to the document, not the viewport
+    if (getComputedStyle(document.body).position === 'static') {
+      document.body.style.position = 'relative';
+    }
     const rows = getCommentRows();
     if (rows.length > 0) {
+      hideNativeToggles();
       initSlider(rows);
+      buildCollapseOverlay(rows);
+      initCollapseRebuild(rows);
     }
     document.body.dataset.hnEnhancer = 'ready';
   }
