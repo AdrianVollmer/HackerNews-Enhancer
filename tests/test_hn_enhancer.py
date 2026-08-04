@@ -154,3 +154,69 @@ def test_collapsed_bar_shows_count(hn_page: Page) -> None:
     text = label.inner_text()
     assert text.startswith('+')
     assert int(text[1:]) > 0
+
+def test_tooltip_element_exists(hn_page: Page) -> None:
+    assert hn_page.locator('#hn-parent-tooltip').count() == 1
+
+def test_tooltip_hidden_by_default(hn_page: Page) -> None:
+    cls = hn_page.evaluate(
+        "document.getElementById('hn-parent-tooltip').className"
+    )
+    assert 'hn-visible' not in cls
+
+def test_tooltip_shown_on_parent_hover(hn_page: Page) -> None:
+    parent_link = hn_page.locator(
+        'tr[id="48515159"] .navs a[href="#48514881"]'
+    )
+    parent_link.hover()
+    hn_page.wait_for_timeout(150)
+    cls = hn_page.evaluate(
+        "document.getElementById('hn-parent-tooltip').className"
+    )
+    assert 'hn-visible' in cls
+
+def test_tooltip_contains_parent_author(hn_page: Page) -> None:
+    parent_link = hn_page.locator(
+        'tr[id="48515159"] .navs a[href="#48514881"]'
+    )
+    parent_link.hover()
+    hn_page.wait_for_timeout(150)
+    text = hn_page.locator('#hn-parent-tooltip').inner_text()
+    assert 'mr_mitm' in text
+
+def test_tooltip_has_no_reply_link(hn_page: Page) -> None:
+    parent_link = hn_page.locator(
+        'tr[id="48515159"] .navs a[href="#48514881"]'
+    )
+    parent_link.hover()
+    hn_page.wait_for_timeout(150)
+    reply_count = hn_page.evaluate(
+        "document.querySelectorAll('#hn-parent-tooltip .reply').length"
+    )
+    assert reply_count == 0
+
+def test_tooltip_hides_on_mouseout(hn_page: Page) -> None:
+    parent_link = hn_page.locator(
+        'tr[id="48515159"] .navs a[href="#48514881"]'
+    )
+    parent_link.hover()
+    hn_page.wait_for_timeout(150)
+    hn_page.mouse.move(10, 10)
+    hn_page.wait_for_timeout(200)
+    cls = hn_page.evaluate(
+        "document.getElementById('hn-parent-tooltip').className"
+    )
+    assert 'hn-visible' not in cls
+
+def test_tooltip_not_shown_for_external_parent(hn_page: Page) -> None:
+    external_link = hn_page.locator(
+        'tr[id="48514881"] .navs a[href^="item?id"]'
+    ).first
+    if external_link.count() == 0:
+        return
+    external_link.hover()
+    hn_page.wait_for_timeout(150)
+    cls = hn_page.evaluate(
+        "document.getElementById('hn-parent-tooltip').className"
+    )
+    assert 'hn-visible' not in cls

@@ -234,6 +234,78 @@
     window.addEventListener('scroll', () => buildCollapseOverlay(rows), { passive: true });
   }
 
+  // ── Parent tooltip ─────────────────────────────────────────────────────────
+
+  let tooltipEl = null;
+  let tooltipHideTimer = null;
+
+  function isParentLink(el) {
+    return el.tagName === 'A'
+      && !!el.closest('.navs')
+      && el.textContent.trim() === 'parent';
+  }
+
+  function showParentTooltip(link) {
+    const href = link.getAttribute('href') || '';
+    if (!href.startsWith('#')) return;
+    const targetRow = document.getElementById(href.slice(1));
+    if (!targetRow) return;
+
+    const innerTable = targetRow.querySelector('table');
+    if (!innerTable) return;
+
+    const clone = innerTable.cloneNode(true);
+    clone.querySelector('.reply')?.remove();
+    const img = clone.querySelector('td.ind img');
+    if (img) img.width = 0;
+
+    tooltipEl.innerHTML = '';
+    const label = document.createElement('div');
+    label.className = 'hn-tooltip-label';
+    label.textContent = 'Parent comment';
+    tooltipEl.appendChild(label);
+    tooltipEl.appendChild(clone);
+
+    tooltipEl.style.left = '-9999px';
+    tooltipEl.style.top  = '-9999px';
+    tooltipEl.classList.add('hn-visible');
+
+    const r  = link.getBoundingClientRect();
+    const tw = tooltipEl.offsetWidth;
+    const th = tooltipEl.offsetHeight;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const G  = 8;
+
+    let top  = r.bottom + G;
+    if (top + th > vh - G) top = r.top - th - G;
+    let left = r.left;
+    if (left + tw > vw - G) left = vw - tw - G;
+    if (left < G) left = G;
+
+    tooltipEl.style.left = `${left}px`;
+    tooltipEl.style.top  = `${top}px`;
+  }
+
+  function initTooltip() {
+    tooltipEl = document.createElement('div');
+    tooltipEl.id = 'hn-parent-tooltip';
+    document.body.appendChild(tooltipEl);
+
+    document.addEventListener('mouseover', (e) => {
+      if (!isParentLink(e.target)) return;
+      clearTimeout(tooltipHideTimer);
+      showParentTooltip(e.target);
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      if (!isParentLink(e.target)) return;
+      tooltipHideTimer = setTimeout(() => {
+        tooltipEl.classList.remove('hn-visible');
+      }, 80);
+    });
+  }
+
   // ── Init ───────────────────────────────────────────────────────────────────
 
   async function init() {
@@ -250,6 +322,7 @@
       initSlider(rows);
       buildCollapseOverlay(rows);
       initCollapseRebuild(rows);
+      initTooltip();
     }
     document.body.dataset.hnEnhancer = 'ready';
   }
