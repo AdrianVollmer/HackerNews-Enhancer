@@ -3,6 +3,12 @@
   "name": "HN Enhancer",
   "version": "1.0.0",
   "description": "Dark theme, comment highlighter, collapse bars, parent tooltips for Hacker News.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "hn-enhancer@local",
+      "strict_min_version": "109.0"
+    }
+  },
   "icons": { "48": "icons/icon.svg" },
   "content_scripts": [
     {
