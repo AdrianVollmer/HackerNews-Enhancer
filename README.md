@@ -14,33 +14,29 @@ A Firefox extension that improves the Hacker News reading experience.
 
 ## Installation
 
-Firefox does not load unsigned extensions by default, so you need to use Developer Mode or a temporary installation.
+### Temporary load via about:debugging (any Firefox, no signing required)
 
-### Temporary installation (easiest)
-
-First, build a zip with `manifest.json` at the root (Firefox requires this — a zip that contains the directory as a subfolder will be rejected as corrupted):
-
-```bash
-cd hn-enhancer && zip -r ../hn-enhancer.zip .
-```
-
-Then:
+This bypasses signature verification entirely. The extension is active until you restart Firefox.
 
 1. Open Firefox and go to `about:debugging`
 2. Click **This Firefox** in the left sidebar
 3. Click **Load Temporary Add-on...**
-4. Select `hn-enhancer.zip`
+4. Select `hn-enhancer/manifest.json`
 
-The extension stays active until you restart Firefox. Repeat this after each restart.
+Repeat after each restart.
 
-### Permanent installation (Developer Edition / Nightly)
+### Permanent installation (Firefox Developer Edition or Nightly only)
 
-Firefox Developer Edition and Nightly allow installing unsigned extensions permanently:
+Standard Firefox release enforces extension signing even when `xpinstall.signatures.required` is toggled in `about:config` — that setting is locked in release builds. Developer Edition and Nightly are the only builds where it takes effect.
 
-1. Build the zip as above: `cd hn-enhancer && zip -r ../hn-enhancer.zip .`
-2. Go to `about:config` and set `xpinstall.signatures.required` to `false`
-3. Go to `about:addons` → gear icon → **Install Add-on From File...**
-4. Select `hn-enhancer.zip`
+1. Download [Firefox Developer Edition](https://www.mozilla.org/firefox/developer/) or Nightly
+2. In `about:config`, set `xpinstall.signatures.required` to `false`
+3. Build the zip with `manifest.json` at the root:
+   ```bash
+   cd hn-enhancer && zip -r ../hn-enhancer.zip .
+   ```
+4. Go to `about:addons` → gear icon → **Install Add-on From File...**
+5. Select `hn-enhancer.zip`
 
 ### Packaging as a signed extension
 
