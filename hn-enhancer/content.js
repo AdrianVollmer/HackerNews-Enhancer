@@ -230,8 +230,13 @@
   }
 
   function initCollapseRebuild(rows) {
-    window.addEventListener('resize', () => buildCollapseOverlay(rows));
-    window.addEventListener('scroll', () => buildCollapseOverlay(rows), { passive: true });
+    // Bars are in document coordinates so scroll needs no rebuild.
+    // Debounce resize since layout geometry changes but events fire rapidly.
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => buildCollapseOverlay(rows), 150);
+    });
   }
 
   // ── Parent tooltip ─────────────────────────────────────────────────────────
