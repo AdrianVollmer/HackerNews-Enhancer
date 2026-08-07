@@ -168,6 +168,7 @@
     const scrollX = window.scrollX;
     const BAR_W = 6;
     const GAP = 4;
+    const MARGIN = 4;
 
     // Read phase: measure all rows in one pass before touching the DOM.
     // Interleaving reads with DOM writes causes a forced reflow per bar.
@@ -198,7 +199,7 @@
       if (!indCell) return;
       const left = indCell.getBoundingClientRect().right + scrollX - BAR_W - GAP;
 
-      specs.push({ i, isCollapsed, topY, left, height, count: subtreeIdxs.length });
+      specs.push({ i, isCollapsed, topY: topY + MARGIN, left, height: height - MARGIN * 2, count: subtreeIdxs.length });
     });
 
     // Write phase: build and insert all bars at once.
