@@ -163,13 +163,15 @@
       collapseOverlay.id = 'hn-collapse-overlay';
       document.body.appendChild(collapseOverlay);
     }
-    collapseOverlay.innerHTML = '';
 
     const scrollY = window.scrollY;
     const scrollX = window.scrollX;
     const BAR_W = 6;
     const GAP = 4;
 
+    // Read phase: measure all rows in one pass before touching the DOM.
+    // Interleaving reads with DOM writes causes a forced reflow per bar.
+    const specs = [];
     rows.forEach((tr, i) => {
       const subtreeIdxs = getSubtreeIndices(rows, i);
       if (subtreeIdxs.length === 0) return;
@@ -196,25 +198,32 @@
       if (!indCell) return;
       const left = indCell.getBoundingClientRect().right + scrollX - BAR_W - GAP;
 
+      specs.push({ i, isCollapsed, topY, left, height, count: subtreeIdxs.length });
+    });
+
+    // Write phase: build and insert all bars at once.
+    const fragment = document.createDocumentFragment();
+    specs.forEach(({ i, isCollapsed, topY, left, height, count }) => {
       const bar = document.createElement('div');
       bar.className = 'hn-cbar' + (isCollapsed ? ' hn-collapsed' : '');
-      bar.style.top = `${topY}px`;
-      bar.style.left = `${left}px`;
-      bar.style.height = `${height}px`;
+      bar.style.cssText = `top:${topY}px;left:${left}px;height:${height}px`;
       bar.title = isCollapsed
-        ? `Expand ${subtreeIdxs.length} comment${subtreeIdxs.length !== 1 ? 's' : ''}`
+        ? `Expand ${count} comment${count !== 1 ? 's' : ''}`
         : 'Collapse thread';
 
       if (isCollapsed) {
         const lbl = document.createElement('span');
         lbl.className = 'hn-cbar-count';
-        lbl.textContent = `+${subtreeIdxs.length}`;
+        lbl.textContent = `+${count}`;
         bar.appendChild(lbl);
       }
 
       bar.addEventListener('click', () => toggleCollapse(rows, i));
-      collapseOverlay.appendChild(bar);
+      fragment.appendChild(bar);
     });
+
+    collapseOverlay.innerHTML = '';
+    collapseOverlay.appendChild(fragment);
   }
 
   function toggleCollapse(rows, rootIdx) {
