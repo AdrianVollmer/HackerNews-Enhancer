@@ -323,6 +323,22 @@
 
   // ── Init ───────────────────────────────────────────────────────────────────
 
+  // HN pre-collapses some comments. Adopt them into our state so the overlay
+  // renders a pill and our toggle handles expand/collapse correctly.
+  function normalizeHnCollapsed(rows) {
+    // Read all offsets in one pass to avoid layout thrashing.
+    const heights = rows.map(tr => tr.offsetHeight);
+    rows.forEach((tr, i) => {
+      if (heights[i] === 0) return; // already hidden — child of a collapsed parent
+      const subtreeIdxs = getSubtreeIndices(rows, i);
+      if (subtreeIdxs.length === 0) return;
+      if (heights[subtreeIdxs[0]] === 0) {
+        tr.classList.add('hn-collapsed');
+        subtreeIdxs.forEach(j => rows[j].classList.add('hn-hidden'));
+      }
+    });
+  }
+
   async function init() {
     const prefs = await loadPrefs();
     createPanel();
@@ -334,6 +350,7 @@
     const rows = getCommentRows();
     if (rows.length > 0) {
       hideNativeToggles();
+      normalizeHnCollapsed(rows);
       initSlider(rows);
       buildCollapseOverlay(rows);
       initCollapseRebuild(rows);
