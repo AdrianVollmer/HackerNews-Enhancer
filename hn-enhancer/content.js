@@ -254,10 +254,12 @@
   let tooltipEl = null;
   let tooltipHideTimer = null;
 
-  function isParentLink(el) {
+  const TOOLTIP_LINKS = new Set(['parent', 'prev', 'next']);
+
+  function isTooltipLink(el) {
     return el.tagName === 'A'
       && !!el.closest('.navs')
-      && el.textContent.trim() === 'parent';
+      && TOOLTIP_LINKS.has(el.textContent.trim());
   }
 
   function showParentTooltip(link) {
@@ -277,10 +279,12 @@
     tooltipEl.innerHTML = '';
     const label = document.createElement('div');
     label.className = 'hn-tooltip-label';
-    label.textContent = 'Parent comment';
+    label.textContent = link.textContent.trim() + ' comment';
     tooltipEl.appendChild(label);
     tooltipEl.appendChild(clone);
 
+    // Cap height at half the viewport before measuring, so positioning is correct.
+    tooltipEl.style.maxHeight = `${Math.floor(window.innerHeight / 2)}px`;
     tooltipEl.style.left = '-9999px';
     tooltipEl.style.top  = '-9999px';
     tooltipEl.classList.add('hn-visible');
@@ -308,13 +312,13 @@
     document.body.appendChild(tooltipEl);
 
     document.addEventListener('mouseover', (e) => {
-      if (!isParentLink(e.target)) return;
+      if (!isTooltipLink(e.target)) return;
       clearTimeout(tooltipHideTimer);
       showParentTooltip(e.target);
     });
 
     document.addEventListener('mouseout', (e) => {
-      if (!isParentLink(e.target)) return;
+      if (!isTooltipLink(e.target)) return;
       tooltipHideTimer = setTimeout(() => {
         tooltipEl.classList.remove('hn-visible');
       }, 80);
