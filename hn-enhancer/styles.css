@@ -84,7 +84,11 @@
 /* ── Dark mode ─────────────────────────────────────────────────────────── */
 body.hn-dark { background-color: #1a1a1a !important; color: #d0d0c8 !important; }
 body.hn-dark a { color: #9999aa !important; }
+body.hn-dark a:visited { color: #9999aa !important; }
 body.hn-dark a.hnuser { color: #e0e0d8 !important; }
+/* Top bar sits on orange — keep links white for contrast */
+body.hn-dark .pagetop a,
+body.hn-dark .pagetop a:visited { color: #fff !important; }
 body.hn-dark .comhead { color: #606060; }
 body.hn-dark td[bgcolor="#f6f6ef"],
 body.hn-dark table[bgcolor="#f6f6ef"],
