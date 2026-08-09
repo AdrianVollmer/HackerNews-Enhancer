@@ -338,7 +338,11 @@
       if (subtreeIdxs.length === 0) return;
       if (heights[subtreeIdxs[0]] === 0) {
         tr.classList.add('hn-collapsed');
-        subtreeIdxs.forEach(j => rows[j].classList.add('hn-hidden'));
+        subtreeIdxs.forEach(j => {
+          // Strip HN's inline display:none so our class is the sole controller.
+          if (rows[j].style.display === 'none') rows[j].style.display = '';
+          rows[j].classList.add('hn-hidden');
+        });
       }
     });
   }
