@@ -114,7 +114,7 @@
 
     const minTs = Math.min(...timestamps);
     const maxTs = Math.max(...timestamps);
-    const nowApprox = maxTs + 60;
+    const nowApprox = Math.floor(Date.now() / 1000);
 
     const slider = document.getElementById('hn-age-slider');
     if (!slider) return;
