@@ -115,7 +115,6 @@
     const minTs = Math.min(...timestamps);
     const maxTs = Math.max(...timestamps);
     const nowApprox = Math.floor(Date.now() / 1000);
-    console.debug('[hn-enhancer] slider timestamps — min:', new Date(minTs * 1000).toISOString(), 'max:', new Date(maxTs * 1000).toISOString(), 'now:', new Date(nowApprox * 1000).toISOString(), 'rows:', rows.length);
 
     const slider = document.getElementById('hn-age-slider');
     if (!slider) return;
@@ -132,6 +131,7 @@
     }
 
     document.getElementById('hn-lbl-old').textContent = formatAgo(minTs);
+    document.getElementById('hn-lbl-new').textContent = formatAgo(maxTs);
 
     const display = document.getElementById('hn-slider-display');
     slider.addEventListener('input', () => {
