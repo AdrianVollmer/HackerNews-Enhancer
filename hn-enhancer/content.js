@@ -356,6 +356,47 @@
     });
   }
 
+  // ── Score colorization ─────────────────────────────────────────────────────
+
+  function colorizeScores() {
+    // Tiers for story points and comment counts (max ~2000)
+    const STORY_TIERS  = [1500, 700, 300, 100, 50];
+    const COMMENT_TIERS = [800, 350, 150, 50, 20];
+    // Tiers for own comment points (max ~20)
+    const OWN_TIERS = [15, 10, 6, 3, 1];
+
+    function tier(n, thresholds) {
+      for (let i = 0; i < thresholds.length; i++) {
+        if (n >= thresholds[i]) return i + 1;
+      }
+      return 0;
+    }
+
+    // Story points — span.score inside td.subtext (front page + thread header)
+    document.querySelectorAll('td.subtext span.score').forEach(el => {
+      const n = parseInt(el.textContent, 10);
+      const t = tier(n, STORY_TIERS);
+      if (t) el.classList.add(`hn-score-${t}`);
+    });
+
+    // Comment counts — last link in td.subtext whose text ends with "comments"
+    document.querySelectorAll('td.subtext').forEach(td => {
+      const links = Array.from(td.querySelectorAll('a'));
+      const link = links.reverse().find(a => /\d+\s+comment/.test(a.textContent));
+      if (!link) return;
+      const n = parseInt(link.textContent, 10);
+      const t = tier(n, COMMENT_TIERS);
+      if (t) link.classList.add(`hn-score-${t}`);
+    });
+
+    // Own comment points — span.score inside comment rows
+    document.querySelectorAll('tr.athing.comtr span.score').forEach(el => {
+      const n = parseInt(el.textContent, 10);
+      const t = tier(n, OWN_TIERS);
+      if (t) el.classList.add(`hn-score-${t}`);
+    });
+  }
+
   async function init() {
     const prefs = await loadPrefs();
     createPanel();
@@ -373,6 +414,7 @@
       initCollapseRebuild(rows);
       initTooltip();
     }
+    colorizeScores();
     document.body.dataset.hnEnhancer = 'ready';
   }
 

@@ -177,6 +177,20 @@ tr.hn-hidden { display: none; }
 #hn-parent-tooltip td.default { padding-left: 6px; }
 body.hn-dark #hn-parent-tooltip { background: #242424; border-color: #383838; }
 
+/* ── Score colorization ────────────────────────────────────────────────── */
+/* 5-tier warm scale: tan → gold → orange → red-orange → crimson          */
+.hn-score-1 { color: #9b7c45 !important; }
+.hn-score-2 { color: #c89010 !important; }
+.hn-score-3 { color: #d86800 !important; }
+.hn-score-4 { color: #c43800 !important; }
+.hn-score-5 { color: #a81000 !important; }
+
+body.hn-dark .hn-score-1 { color: #b89c60 !important; }
+body.hn-dark .hn-score-2 { color: #d4a820 !important; }
+body.hn-dark .hn-score-3 { color: #f07c18 !important; }
+body.hn-dark .hn-score-4 { color: #e04c20 !important; }
+body.hn-dark .hn-score-5 { color: #e02828 !important; }
+
 .hn-tooltip-label {
   font-size: 10px;
   font-weight: bold;
