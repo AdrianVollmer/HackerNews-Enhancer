@@ -20,6 +20,13 @@
     return parts.length >= 2 ? parseInt(parts[1], 10) : 0;
   }
 
+  function getStoryTimestamp() {
+    const age = document.querySelector('td.subtext span.age');
+    if (!age) return 0;
+    const parts = (age.getAttribute('title') || '').split(' ');
+    return parts.length >= 2 ? parseInt(parts[1], 10) : 0;
+  }
+
   function getSubtreeIndices(rows, rootIdx) {
     const rootDepth = getDepth(rows[rootIdx]);
     const indices = [];
@@ -109,7 +116,8 @@
   // ── Slider ────────────────────────────────────────────────────────────────
 
   function initSlider(rows) {
-    const timestamps = rows.map(getTimestamp).filter(t => t > 0);
+    const storyTs = getStoryTimestamp();
+    const timestamps = rows.map(getTimestamp).filter(t => t > 0 && (storyTs === 0 || t >= storyTs));
     if (timestamps.length === 0) return;
 
     const minTs = Math.min(...timestamps);
