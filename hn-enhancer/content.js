@@ -365,7 +365,7 @@
     const OWN_TIERS     = [1, 3, 6, 10, 15];
 
     function tier(n, thresholds) {
-      for (let i = 0; i < thresholds.length; i++) {
+      for (let i = thresholds.length - 1; i >= 0; i--) {
         if (n >= thresholds[i]) return i + 1;
       }
       return 0;
