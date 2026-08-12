@@ -360,10 +360,9 @@
 
   function colorizeScores() {
     // Tiers for story points and comment counts (max ~2000)
-    const STORY_TIERS  = [1500, 700, 300, 100, 50];
-    const COMMENT_TIERS = [800, 350, 150, 50, 20];
-    // Tiers for own comment points (max ~20)
-    const OWN_TIERS = [15, 10, 6, 3, 1];
+    const STORY_TIERS   = [50, 100, 300, 700, 1500];
+    const COMMENT_TIERS = [20, 50, 150, 350, 800];
+    const OWN_TIERS     = [1, 3, 6, 10, 15];
 
     function tier(n, thresholds) {
       for (let i = 0; i < thresholds.length; i++) {
