@@ -39,24 +39,18 @@
 
   // ── Storage ────────────────────────────────────────────────────────────────
 
-  async function loadPrefs() {
-    try {
-      const result = await browser.storage.local.get(['darkMode']);
-      return { darkMode: result.darkMode === true };
-    } catch (e) {
-      return { darkMode: false };
-    }
+  function loadPrefs() {
+    return { darkMode: localStorage.getItem('hn-dark') === '1' };
   }
 
-  async function savePref(key, value) {
-    try {
-      await browser.storage.local.set({ [key]: value });
-    } catch (e) {}
+  function savePref(key, value) {
+    if (key === 'darkMode') localStorage.setItem('hn-dark', value ? '1' : '0');
   }
 
   // ── Dark mode ──────────────────────────────────────────────────────────────
 
   function applyDark(on) {
+    document.documentElement.classList.toggle('hn-dark', on);
     document.body.classList.toggle('hn-dark', on);
     const toggle = document.getElementById('hn-theme-toggle');
     if (toggle) toggle.classList.toggle('hn-on', on);
@@ -373,7 +367,7 @@
 
     // Story points — span.score inside td.subtext (front page + thread header)
     document.querySelectorAll('td.subtext span.score').forEach(el => {
-      const n = parseInt(el.textContent, 10);
+      const n = parseInt(el.textContent.replace(/,/g, ''), 10);
       const t = tier(n, STORY_TIERS);
       if (t) el.classList.add(`hn-score-${t}`);
     });
@@ -381,23 +375,23 @@
     // Comment counts — last link in td.subtext whose text ends with "comments"
     document.querySelectorAll('td.subtext').forEach(td => {
       const links = Array.from(td.querySelectorAll('a'));
-      const link = links.reverse().find(a => /\d+\s+comment/.test(a.textContent));
+      const link = links.reverse().find(a => /[\d,]+\s+comment/.test(a.textContent));
       if (!link) return;
-      const n = parseInt(link.textContent, 10);
+      const n = parseInt(link.textContent.replace(/,/g, ''), 10);
       const t = tier(n, COMMENT_TIERS);
       if (t) link.classList.add(`hn-score-${t}`);
     });
 
     // Own comment points — span.score inside comment rows
     document.querySelectorAll('tr.athing.comtr span.score').forEach(el => {
-      const n = parseInt(el.textContent, 10);
+      const n = parseInt(el.textContent.replace(/,/g, ''), 10);
       const t = tier(n, OWN_TIERS);
       if (t) el.classList.add(`hn-score-${t}`);
     });
   }
 
   async function init() {
-    const prefs = await loadPrefs();
+    const prefs = loadPrefs();
     createPanel();
     applyDark(prefs.darkMode);
     // Anchor the absolute overlay to the document, not the viewport

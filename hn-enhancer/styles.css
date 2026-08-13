@@ -82,6 +82,7 @@
 .hn-pill-toggle.hn-on::after { left: 18px; }
 
 /* ── Dark mode ─────────────────────────────────────────────────────────── */
+html.hn-dark { background: #1a1a1a !important; }
 body.hn-dark { background-color: #1a1a1a !important; color: #d0d0c8 !important; }
 body.hn-dark a { color: #9999aa !important; }
 body.hn-dark a:visited { color: #9999aa !important; }
