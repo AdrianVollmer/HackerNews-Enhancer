@@ -153,6 +153,8 @@ body.hn-dark .hn-cbar:hover { background: #ff6600; }
 }
 
 tr.hn-hidden { display: none; }
+tr.hn-collapsed .comment,
+tr.hn-collapsed .reply { display: none; }
 
 /* ── Parent tooltip ────────────────────────────────────────────────────── */
 #hn-parent-tooltip {
