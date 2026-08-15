@@ -349,6 +349,70 @@
     });
   }
 
+  // ── Markdown rendering ─────────────────────────────────────────────────────
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function applyInlineToTextNode(node) {
+    const raw = node.textContent;
+    if (!/[*`]/.test(raw)) return;
+    const escaped = escapeHtml(raw);
+    const html = escaped
+      .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
+      .replace(/`([^`\n]+)`/g, '<code>$1</code>');
+    if (html === escaped) return;
+    const tmp = document.createElement('span');
+    tmp.innerHTML = html;
+    const frag = document.createDocumentFragment();
+    while (tmp.firstChild) frag.appendChild(tmp.firstChild);
+    node.parentNode.replaceChild(frag, node);
+  }
+
+  function renderMarkdown(commtext) {
+    const SKIP_INLINE = new Set(['A', 'CODE', 'STRONG', 'EM']);
+
+    // Pass 1: convert paragraphs starting with > into <blockquote>
+    Array.from(commtext.childNodes).forEach(node => {
+      const isText = node.nodeType === Node.TEXT_NODE;
+      const isP = node.nodeType === Node.ELEMENT_NODE && node.tagName === 'P';
+      if (!isText && !isP) return;
+
+      const leadText = isText
+        ? node.textContent
+        : (node.firstChild?.nodeType === Node.TEXT_NODE ? node.firstChild.textContent : '');
+      if (!/^\s*>/.test(leadText)) return;
+
+      const bq = document.createElement('blockquote');
+      if (isText) {
+        bq.textContent = node.textContent.replace(/^\s*>\s*/, '');
+        commtext.replaceChild(bq, node);
+      } else {
+        if (node.firstChild?.nodeType === Node.TEXT_NODE) {
+          node.firstChild.textContent = node.firstChild.textContent.replace(/^\s*>\s*/, '');
+        }
+        while (node.firstChild) bq.appendChild(node.firstChild);
+        commtext.replaceChild(bq, node);
+      }
+    });
+
+    // Pass 2: inline formatting on all text nodes (including blockquote content)
+    const walker = document.createTreeWalker(commtext, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    while (walker.nextNode()) {
+      let p = walker.currentNode.parentElement;
+      let skip = false;
+      while (p && p !== commtext) {
+        if (SKIP_INLINE.has(p.tagName)) { skip = true; break; }
+        p = p.parentElement;
+      }
+      if (!skip) textNodes.push(walker.currentNode);
+    }
+    textNodes.forEach(applyInlineToTextNode);
+  }
+
   // ── Score colorization ─────────────────────────────────────────────────────
 
   function colorizeScores() {
@@ -407,6 +471,7 @@
       initTooltip();
     }
     colorizeScores();
+    document.querySelectorAll('.commtext').forEach(renderMarkdown);
     document.body.dataset.hnEnhancer = 'ready';
   }
 

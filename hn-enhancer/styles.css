@@ -196,6 +196,29 @@ body.hn-dark .hn-score-3, body.hn-dark a.hn-score-3:visited { color: #f07c18 !im
 body.hn-dark .hn-score-4, body.hn-dark a.hn-score-4:visited { color: #e04c20 !important; }
 body.hn-dark .hn-score-5, body.hn-dark a.hn-score-5:visited { color: #e02828 !important; }
 
+/* ── Markdown rendering ──────────────────────────────────────────────────── */
+.commtext blockquote {
+  border-left: 3px solid #d0d0c8;
+  margin: 4px 0;
+  padding: 0 0 0 10px;
+  color: #555;
+}
+.commtext code {
+  font-family: 'Courier New', Courier, monospace;
+  background: #f0f0ec;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.92em;
+}
+body.hn-dark .commtext blockquote {
+  border-color: #444;
+  color: #909090;
+}
+body.hn-dark .commtext code {
+  background: #2a2a2a;
+  color: #c8c8c0;
+}
+
 .hn-tooltip-label {
   font-size: 10px;
   font-weight: bold;
