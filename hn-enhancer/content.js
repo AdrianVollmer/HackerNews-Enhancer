@@ -178,15 +178,14 @@
     const specs = [];
     rows.forEach((tr, i) => {
       const subtreeIdxs = getSubtreeIndices(rows, i);
-      if (subtreeIdxs.length === 0) return;
-
       const isCollapsed = tr.classList.contains('hn-collapsed');
       const trRect = tr.getBoundingClientRect();
       const topY = trRect.top + scrollY;
 
       let botY;
       if (isCollapsed) {
-        botY = topY + Math.max(trRect.height - 18, 10);
+        // Body is hidden by CSS — trRect already reflects the header-only height.
+        botY = trRect.bottom + scrollY;
       } else {
         let lastVisible = tr;
         for (const j of subtreeIdxs) {
@@ -212,10 +211,10 @@
       bar.className = 'hn-cbar' + (isCollapsed ? ' hn-collapsed' : '');
       bar.style.cssText = `top:${topY}px;left:${left}px;height:${height}px`;
       bar.title = isCollapsed
-        ? `Expand ${count} comment${count !== 1 ? 's' : ''}`
-        : 'Collapse thread';
+        ? (count > 0 ? `Expand ${count} comment${count !== 1 ? 's' : ''}` : 'Expand comment')
+        : (count > 0 ? 'Collapse thread' : 'Collapse comment');
 
-      if (isCollapsed) {
+      if (isCollapsed && count > 0) {
         const lbl = document.createElement('span');
         lbl.className = 'hn-cbar-count';
         lbl.textContent = `+${count}`;
