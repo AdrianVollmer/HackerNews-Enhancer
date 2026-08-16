@@ -478,6 +478,8 @@
       document.body.style.position = 'relative';
     }
     const rows = getCommentRows();
+    colorizeScores();
+    document.querySelectorAll('.commtext').forEach(renderMarkdown);
     if (rows.length > 0) {
       hideNativeToggles();
       normalizeHnCollapsed(rows);
@@ -486,8 +488,6 @@
       initCollapseRebuild(rows);
       initTooltip();
     }
-    colorizeScores();
-    document.querySelectorAll('.commtext').forEach(renderMarkdown);
     document.body.dataset.hnEnhancer = 'ready';
   }
 
