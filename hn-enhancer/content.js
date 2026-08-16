@@ -355,14 +355,22 @@
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
+  function rawSpan(text) {
+    const s = document.createElement('span');
+    s.className = 'hn-md-raw';
+    s.textContent = text;
+    return s;
+  }
+
   function applyInlineToTextNode(node) {
     const raw = node.textContent;
     if (!/[*`]/.test(raw)) return;
     const escaped = escapeHtml(raw);
+    const R = '<span class="hn-md-raw">';
     const html = escaped
-      .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
-      .replace(/`([^`\n]+)`/g, '<code>$1</code>');
+      .replace(/\*\*([^*\n]+)\*\*/g, `${R}**</span><strong>$1</strong>${R}**</span>`)
+      .replace(/\*([^*\n]+)\*/g,      `${R}*</span><em>$1</em>${R}*</span>`)
+      .replace(/`([^`\n]+)`/g,        `${R}\`</span><code>$1</code>${R}\`</span>`);
     if (html === escaped) return;
     const tmp = document.createElement('span');
     tmp.innerHTML = html;
@@ -375,6 +383,7 @@
     const SKIP_INLINE = new Set(['A', 'CODE', 'STRONG', 'EM']);
 
     // Pass 1: convert paragraphs starting with > into <blockquote>
+    // Keep the leading "> " in a zero-size span so copy-paste preserves it.
     Array.from(commtext.childNodes).forEach(node => {
       const isText = node.nodeType === Node.TEXT_NODE;
       const isP = node.nodeType === Node.ELEMENT_NODE && node.tagName === 'P';
@@ -387,11 +396,18 @@
 
       const bq = document.createElement('blockquote');
       if (isText) {
-        bq.textContent = node.textContent.replace(/^\s*>\s*/, '');
+        const m = node.textContent.match(/^(\s*>\s*)([\s\S]*)$/);
+        bq.appendChild(rawSpan(m[1]));
+        bq.appendChild(document.createTextNode(m[2]));
         commtext.replaceChild(bq, node);
       } else {
-        if (node.firstChild?.nodeType === Node.TEXT_NODE) {
-          node.firstChild.textContent = node.firstChild.textContent.replace(/^\s*>\s*/, '');
+        const fc = node.firstChild;
+        if (fc?.nodeType === Node.TEXT_NODE) {
+          const m = fc.textContent.match(/^(\s*>\s*)([\s\S]*)$/);
+          if (m) {
+            bq.appendChild(rawSpan(m[1]));
+            fc.textContent = m[2];
+          }
         }
         while (node.firstChild) bq.appendChild(node.firstChild);
         commtext.replaceChild(bq, node);
