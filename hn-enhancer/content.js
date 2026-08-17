@@ -199,7 +199,9 @@
 
       const indCell = tr.querySelector('td.ind');
       if (!indCell) return;
-      const left = indCell.getBoundingClientRect().right + scrollX - BAR_W - GAP;
+      const voteCell = tr.querySelector('td.votelinks');
+      const anchorLeft = (voteCell ?? indCell).getBoundingClientRect().left + scrollX;
+      const left = anchorLeft - BAR_W - GAP;
 
       specs.push({ i, isCollapsed, topY: topY + MARGIN, left, height: height - MARGIN * 2, count: subtreeIdxs.length });
     });
