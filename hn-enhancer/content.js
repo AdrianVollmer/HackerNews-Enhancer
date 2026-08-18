@@ -199,9 +199,12 @@
 
       const indCell = tr.querySelector('td.ind');
       if (!indCell) return;
-      const voteCell = tr.querySelector('td.votelinks');
-      const anchorLeft = (voteCell ?? indCell).getBoundingClientRect().left + scrollX;
-      const left = anchorLeft - BAR_W - GAP;
+      // Centre the bar in its depth's 40 px indent slot so it never crowds
+      // the votelinks cell. Depth 0 bar lands in the left page margin.
+      const HN_INDENT_STEP = 40;
+      const depth = getDepth(tr);
+      const indLeft = indCell.getBoundingClientRect().left + scrollX;
+      const left = indLeft + depth * HN_INDENT_STEP - Math.floor(HN_INDENT_STEP / 2) - Math.floor(BAR_W / 2);
 
       specs.push({ i, isCollapsed, topY: topY + MARGIN, left, height: height - MARGIN * 2, count: subtreeIdxs.length });
     });
