@@ -12,6 +12,8 @@ A Firefox extension that improves the Hacker News reading experience.
 
 **Parent comment tooltip** — hovering over a `parent` link shows the referenced comment in a floating card, so you can read context without scrolling up. Only works for on-page parents; cross-page links are silently ignored.
 
+**Markdown rendering** — comment text is lightly rendered: lines starting with `>` become block quotes, `` `backticks` `` produce inline code, and `*italic*` / `**bold**` are styled accordingly. The original characters are preserved in the DOM so copy-pasting reproduces the plain-text source.
+
 ## Installation
 
 ### Temporary load via about:debugging (any Firefox, no signing required)
