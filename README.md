@@ -51,14 +51,3 @@ web-ext sign --api-key=<your-key> --api-secret=<your-secret>
 ```
 
 See the [web-ext documentation](https://extensionworkshop.com/documentation/develop/getting-started-with-web-ext/) for details.
-
-## Development
-
-No build step required — plain JS and CSS.
-
-Run the test suite (requires Python and `uv`):
-
-```bash
-cd /workspace
-uv run --with pytest-playwright pytest tests/ -v
-```
