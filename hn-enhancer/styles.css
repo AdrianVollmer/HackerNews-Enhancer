@@ -140,17 +140,15 @@ body.hn-dark tr.hn-new-comment td.default { border-left-color: #c08000; }
 body.hn-dark .hn-cbar { background: #3a3a3a; }
 body.hn-dark .hn-cbar:hover { background: #ff6600; }
 
-.hn-cbar-count {
-  position: absolute;
-  bottom: -16px;
-  left: 50%;
-  transform: translateX(-50%);
+.hn-collapsed-count {
   font-size: 9px;
   font-family: Verdana, sans-serif;
-  color: #999;
+  color: #ff6600;
+  font-weight: bold;
+  margin-left: 6px;
   white-space: nowrap;
-  pointer-events: none;
 }
+body.hn-dark .hn-collapsed-count { color: #ff8833; }
 
 tr.hn-hidden { display: none; }
 tr.hn-collapsed .comment,

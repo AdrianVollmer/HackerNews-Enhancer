@@ -167,6 +167,9 @@
       document.body.appendChild(collapseOverlay);
     }
 
+    // Clear previous inline count badges before rebuilding.
+    document.querySelectorAll('.hn-collapsed-count').forEach(el => el.remove());
+
     const scrollY = window.scrollY;
     const scrollX = window.scrollX;
     const BAR_W = 6;
@@ -206,12 +209,12 @@
       const indLeft = indCell.getBoundingClientRect().left + scrollX;
       const left = indLeft + depth * HN_INDENT_STEP - Math.floor(HN_INDENT_STEP / 2) - Math.floor(BAR_W / 2);
 
-      specs.push({ i, isCollapsed, topY: topY + MARGIN, left, height: height - MARGIN * 2, count: subtreeIdxs.length });
+      specs.push({ tr, i, isCollapsed, topY: topY + MARGIN, left, height: height - MARGIN * 2, count: subtreeIdxs.length });
     });
 
-    // Write phase: build and insert all bars at once.
+    // Write phase: build bars and inject inline count badges.
     const fragment = document.createDocumentFragment();
-    specs.forEach(({ i, isCollapsed, topY, left, height, count }) => {
+    specs.forEach(({ tr, i, isCollapsed, topY, left, height, count }) => {
       const bar = document.createElement('div');
       bar.className = 'hn-cbar' + (isCollapsed ? ' hn-collapsed' : '');
       bar.style.cssText = `top:${topY}px;left:${left}px;height:${height}px`;
@@ -220,10 +223,13 @@
         : (count > 0 ? 'Collapse thread' : 'Collapse comment');
 
       if (isCollapsed && count > 0) {
-        const lbl = document.createElement('span');
-        lbl.className = 'hn-cbar-count';
-        lbl.textContent = `+${count}`;
-        bar.appendChild(lbl);
+        const navs = tr.querySelector('.navs');
+        if (navs) {
+          const badge = document.createElement('span');
+          badge.className = 'hn-collapsed-count';
+          badge.textContent = `+${count}`;
+          navs.appendChild(badge);
+        }
       }
 
       bar.addEventListener('click', () => toggleCollapse(rows, i));
