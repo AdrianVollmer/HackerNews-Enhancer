@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext", "deno.ns"],
+    "strict": true
+  },
+  "lint": { "include": ["src/", "tests/"] },
+  "fmt": { "include": ["src/", "tests/"], "lineWidth": 100 },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1",
+    "@b-fuze/deno-dom": "jsr:@b-fuze/deno-dom@^0.1"
+  }
+}
