@@ -349,12 +349,21 @@
       if (heights[i] === 0) return; // already hidden — child of a collapsed parent
       const subtreeIdxs = getSubtreeIndices(rows, i);
       if (subtreeIdxs.length === 0) return;
-      if (heights[subtreeIdxs[0]] === 0) {
+      const firstChild = rows[subtreeIdxs[0]];
+      // HN signals pre-collapse via `coll` on the root, `noshow` on children,
+      // or inline display:none (offsetHeight === 0). Check all three.
+      const preCollapsed = tr.classList.contains('coll')
+        || firstChild.classList.contains('noshow')
+        || heights[subtreeIdxs[0]] === 0;
+      if (preCollapsed) {
+        // Strip HN's own collapse classes so hn-collapsed is the sole controller.
+        tr.classList.remove('coll');
         tr.classList.add('hn-collapsed');
         subtreeIdxs.forEach(j => {
-          // Strip HN's inline display:none so our class is the sole controller.
-          if (rows[j].style.display === 'none') rows[j].style.display = '';
-          rows[j].classList.add('hn-hidden');
+          const row = rows[j];
+          if (row.style.display === 'none') row.style.display = '';
+          row.classList.remove('noshow');
+          row.classList.add('hn-hidden');
         });
       }
     });
