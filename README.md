@@ -14,6 +14,28 @@ A Firefox extension that improves the Hacker News reading experience.
 
 **Markdown rendering** — comment text is lightly rendered: lines starting with `>` become block quotes, `` `backticks` `` produce inline code, and `*italic*` / `**bold**` are styled accordingly. The original characters are preserved in the DOM so copy-pasting reproduces the plain-text source.
 
+## Building
+
+The extension is written in TypeScript and bundled with [Deno](https://deno.com). Install Deno, or install [uv](https://docs.astral.sh/uv/) as a fallback, then run:
+
+```bash
+just build
+```
+
+This compiles `src/content.ts` and `src/early.ts` into `hn-enhancer/content.js` and `hn-enhancer/early.js`. The `hn-enhancer/` directory is then a self-contained, loadable extension.
+
+To also run linting and tests:
+
+```bash
+just check
+```
+
+To produce a zip for submission or installation:
+
+```bash
+just pack
+```
+
 ## Installation
 
 ### Temporary load via about:debugging (any Firefox, no signing required)

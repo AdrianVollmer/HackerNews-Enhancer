@@ -1,4 +1,4 @@
-deno := "uv tool run deno"
+deno := `command -v deno >/dev/null 2>&1 && echo deno || echo "uv tool run deno"`
 
 default: check
 
