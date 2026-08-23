@@ -3,10 +3,14 @@
   "name": "HN Enhancer",
   "version": "1.0.0",
   "description": "Dark theme, comment highlighter, collapse bars, parent tooltips for Hacker News.",
+  "homepage_url": "https://github.com/AdrianVollmer/HackerNews-Enhancer",
   "browser_specific_settings": {
     "gecko": {
       "id": "hn-enhancer@local",
-      "strict_min_version": "109.0"
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   },
   "icons": { "48": "icons/icon.svg" },
