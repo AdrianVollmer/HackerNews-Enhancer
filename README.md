@@ -15,6 +15,7 @@ A Firefox extension that improves the Hacker News reading experience.
 **Markdown rendering** — comment text is lightly rendered: lines starting with `>` become block quotes, `` `backticks` `` produce inline code, and `*italic*` / `**bold**` are styled accordingly. The original characters are preserved in the DOM so copy-pasting reproduces the plain-text source.
 
 ![Demo Screenshot](docs/demo.png)
+![Demo Screenshot 2](docs/demo2.png)
 
 ## Building
 
