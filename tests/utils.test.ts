@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert";
 import { DOMParser } from "@b-fuze/deno-dom";
-import { getDepth, getSubtreeIndices } from "../src/utils.ts";
+import { getDepth, getSubtreeIndices, getTimestamp } from "../src/utils.ts";
 
 function makeDoc(html: string) {
   return new DOMParser().parseFromString(html, "text/html");
@@ -54,6 +54,31 @@ Deno.test("getSubtreeIndices: leaf node returns empty", () => {
 Deno.test("getSubtreeIndices: last row returns empty", () => {
   const rows = [makeRow("0"), makeRow("1")];
   assertEquals(getSubtreeIndices(rows, 1), []);
+});
+
+function makeCommentRow(ageTitle: string): Element {
+  const doc = makeDoc(
+    `<table><tbody><tr class="athing comtr">` +
+      `<td class="default"><span class="age" title="${ageTitle}"></span></td>` +
+      `</tr></tbody></table>`,
+  );
+  return doc.querySelector("tr") as unknown as Element;
+}
+
+Deno.test("getTimestamp: old format (ISO + unix)", () => {
+  const row = makeCommentRow("2026-08-23T10:02:51 1787479371");
+  assertEquals(getTimestamp(row), 1787479371);
+});
+
+Deno.test("getTimestamp: new format (ISO-Z only)", () => {
+  const row = makeCommentRow("2026-08-23T08:32:39.000000Z");
+  assertEquals(getTimestamp(row), Math.floor(new Date("2026-08-23T08:32:39.000000Z").getTime() / 1000));
+});
+
+Deno.test("getTimestamp: missing span returns 0", () => {
+  const doc = makeDoc(`<table><tbody><tr class="athing comtr"><td></td></tr></tbody></table>`);
+  const row = doc.querySelector("tr") as unknown as Element;
+  assertEquals(getTimestamp(row), 0);
 });
 
 Deno.test("getSubtreeIndices: mixed depth subtree", () => {
