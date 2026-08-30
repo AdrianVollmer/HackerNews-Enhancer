@@ -39,6 +39,20 @@ To produce a zip for submission or installation:
 just pack
 ```
 
+To produce a userscript for Tampermonkey, Violentmonkey, or Greasemonkey:
+
+```bash
+just userscript
+```
+
+This runs `build_userscript.py`, which you can also call directly if you don't have `just`:
+
+```bash
+python3 build_userscript.py
+```
+
+Both outputs land in `dist/`.
+
 ## Installation
 
 ### Temporary load via about:debugging (any Firefox, no signing required)
@@ -58,12 +72,12 @@ Standard Firefox release enforces extension signing even when `xpinstall.signatu
 
 1. Download [Firefox Developer Edition](https://www.mozilla.org/firefox/developer/) or Nightly
 2. In `about:config`, set `xpinstall.signatures.required` to `false`
-3. Build the zip with `manifest.json` at the root:
+3. Build the zip:
    ```bash
-   cd hn-enhancer && zip -r ../hn-enhancer.zip .
+   just pack
    ```
 4. Go to `about:addons` → gear icon → **Install Add-on From File...**
-5. Select `hn-enhancer.zip`
+5. Select `dist/hn-enhancer.zip`
 
 ### Packaging as a signed extension
 

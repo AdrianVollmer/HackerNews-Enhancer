@@ -19,4 +19,9 @@ test:
 check: lint test
 
 pack: build
-    cd hn-enhancer && zip -r ../hn-enhancer.zip .
+    mkdir -p dist
+    cd hn-enhancer && zip -r ../dist/hn-enhancer.zip .
+
+userscript: build
+    mkdir -p dist
+    python3 build_userscript.py dist/hn-enhancer.user.js
