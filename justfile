@@ -31,9 +31,18 @@ bump version:
     print('Bumped to {{version}}')
 
 pack: build
+    #!/usr/bin/env bash
     mkdir -p dist
-    cd hn-enhancer && zip -r ../dist/hn-enhancer.zip .
+    version=$(python3 -c "import json; print(json.load(open('hn-enhancer/manifest.json'))['version'])")
+    cd hn-enhancer && zip -r "../dist/hn-enhancer-${version}.zip" .
 
 userscript: build
     mkdir -p dist
     python3 build_userscript.py dist/hn-enhancer.user.js
+
+source:
+    #!/usr/bin/env bash
+    mkdir -p dist
+    version=$(python3 -c "import json; print(json.load(open('hn-enhancer/manifest.json'))['version'])")
+    git archive --format=tar.gz --prefix="hn-enhancer-${version}/" HEAD -o "dist/hn-enhancer-${version}.tar.gz"
+    echo "Written dist/hn-enhancer-${version}.tar.gz"
