@@ -127,7 +127,7 @@ export function buildCollapseOverlay(rows: Element[]): void {
     fragment.appendChild(bar);
   });
 
-  collapseOverlay.innerHTML = "";
+  collapseOverlay.replaceChildren();
   collapseOverlay.appendChild(fragment);
 }
 

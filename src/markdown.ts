@@ -2,10 +2,6 @@ const SKIP_INLINE = new Set(["A", "CODE", "STRONG", "EM"]);
 const TEXT_NODE = 3;
 const ELEMENT_NODE = 1;
 
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
 function rawSpan(text: string): HTMLSpanElement {
   const s = document.createElement("span");
   s.className = "hn-md-raw";
@@ -16,17 +12,41 @@ function rawSpan(text: string): HTMLSpanElement {
 export function applyInlineToTextNode(node: Text): void {
   const raw = node.textContent ?? "";
   if (!/[*`]/.test(raw)) return;
-  const escaped = escapeHtml(raw);
-  const R = '<span class="hn-md-raw">';
-  const html = escaped
-    .replace(/\*\*([^*\n]+)\*\*/g, `${R}**</span><strong>$1</strong>${R}**</span>`)
-    .replace(/\*([^*\n]+)\*/g, `${R}*</span><em>$1</em>${R}*</span>`)
-    .replace(/`([^`\n]+)`/g, `${R}\`</span><code>$1</code>${R}\`</span>`);
-  if (html === escaped) return;
-  const tmp = document.createElement("span");
-  tmp.innerHTML = html;
+
+  const pattern = /\*\*([^*\n]+)\*\*|\*([^*\n]+)\*|`([^`\n]+)`/g;
+  const nodes: Node[] = [];
+  let last = 0;
+  let matched = false;
+
+  for (const m of raw.matchAll(pattern)) {
+    matched = true;
+    const [full, bold, italic, code] = m;
+    const idx = m.index!;
+
+    if (idx > last) nodes.push(document.createTextNode(raw.slice(last, idx)));
+
+    if (bold !== undefined) {
+      const el = document.createElement("strong");
+      el.textContent = bold;
+      nodes.push(rawSpan("**"), el, rawSpan("**"));
+    } else if (italic !== undefined) {
+      const el = document.createElement("em");
+      el.textContent = italic;
+      nodes.push(rawSpan("*"), el, rawSpan("*"));
+    } else {
+      const el = document.createElement("code");
+      el.textContent = code!;
+      nodes.push(rawSpan("`"), el, rawSpan("`"));
+    }
+
+    last = idx + full.length;
+  }
+
+  if (!matched) return;
+  if (last < raw.length) nodes.push(document.createTextNode(raw.slice(last)));
+
   const frag = document.createDocumentFragment();
-  while (tmp.firstChild) frag.appendChild(tmp.firstChild);
+  nodes.forEach((n) => frag.appendChild(n));
   node.parentNode!.replaceChild(frag, node);
 }
 

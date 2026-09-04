@@ -30,23 +30,41 @@ export function createPanel(): void {
   panel.id = "hn-ext-panel";
 
   const themeSection = document.createElement("div");
-  themeSection.innerHTML = `
-      <div class="hn-panel-label">Appearance</div>
-      <div class="hn-panel-row">
-        <span>Dark theme</span>
-        <div class="hn-pill-toggle" id="hn-theme-toggle"></div>
-      </div>`;
+  const themeLabel = document.createElement("div");
+  themeLabel.className = "hn-panel-label";
+  themeLabel.textContent = "Appearance";
+  const themeRow = document.createElement("div");
+  themeRow.className = "hn-panel-row";
+  const themeSpan = document.createElement("span");
+  themeSpan.textContent = "Dark theme";
+  const themeToggle = document.createElement("div");
+  themeToggle.className = "hn-pill-toggle";
+  themeToggle.id = "hn-theme-toggle";
+  themeRow.append(themeSpan, themeToggle);
+  themeSection.append(themeLabel, themeRow);
   panel.appendChild(themeSection);
 
   const sliderSection = document.createElement("div");
-  sliderSection.innerHTML = `
-      <div class="hn-panel-label">Highlight newer than</div>
-      <input type="range" id="hn-age-slider">
-      <div class="hn-slider-labels">
-        <span id="hn-lbl-old">oldest</span>
-        <span id="hn-lbl-new">newest</span>
-      </div>
-      <div class="hn-slider-value" id="hn-slider-display">No highlight</div>`;
+  const sliderLabel = document.createElement("div");
+  sliderLabel.className = "hn-panel-label";
+  sliderLabel.textContent = "Highlight newer than";
+  const sliderInput = document.createElement("input");
+  sliderInput.type = "range";
+  sliderInput.id = "hn-age-slider";
+  const sliderLabels = document.createElement("div");
+  sliderLabels.className = "hn-slider-labels";
+  const lblOld = document.createElement("span");
+  lblOld.id = "hn-lbl-old";
+  lblOld.textContent = "oldest";
+  const lblNew = document.createElement("span");
+  lblNew.id = "hn-lbl-new";
+  lblNew.textContent = "newest";
+  sliderLabels.append(lblOld, lblNew);
+  const sliderDisplay = document.createElement("div");
+  sliderDisplay.className = "hn-slider-value";
+  sliderDisplay.id = "hn-slider-display";
+  sliderDisplay.textContent = "No highlight";
+  sliderSection.append(sliderLabel, sliderInput, sliderLabels, sliderDisplay);
   panel.appendChild(sliderSection);
 
   document.body.appendChild(panel);

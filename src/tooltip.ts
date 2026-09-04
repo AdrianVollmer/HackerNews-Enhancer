@@ -23,7 +23,7 @@ function showParentTooltip(link: HTMLAnchorElement): void {
   const img = clone.querySelector("td.ind img") as HTMLImageElement | null;
   if (img) img.width = 0;
 
-  tooltipEl.innerHTML = "";
+  tooltipEl.replaceChildren();
   const label = document.createElement("div");
   label.className = "hn-tooltip-label";
   label.textContent = (link.textContent?.trim() ?? "") + " comment";
