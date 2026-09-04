@@ -18,6 +18,18 @@ test:
 
 check: lint test
 
+bump version:
+    #!/usr/bin/env python3
+    import json, pathlib, subprocess
+    p = pathlib.Path('hn-enhancer/manifest.json')
+    m = json.loads(p.read_text())
+    m['version'] = '{{version}}'
+    p.write_text(json.dumps(m, indent=2) + '\n')
+    subprocess.run(['git', 'add', str(p)], check=True)
+    subprocess.run(['git', 'commit', '--no-gpg-sign', '-m', 'Bump version to {{version}}'], check=True)
+    subprocess.run(['git', 'tag', 'v{{version}}'], check=True)
+    print('Bumped to {{version}}')
+
 pack: build
     mkdir -p dist
     cd hn-enhancer && zip -r ../dist/hn-enhancer.zip .
