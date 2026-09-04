@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "HN Enhancer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Dark theme, comment highlighter, collapse bars, parent tooltips for Hacker News.",
   "homepage_url": "https://github.com/AdrianVollmer/HackerNews-Enhancer",
   "browser_specific_settings": {
@@ -9,21 +9,35 @@
       "id": "hn-enhancer@local",
       "strict_min_version": "140.0",
       "data_collection_permissions": {
-        "required": ["none"]
+        "required": [
+          "none"
+        ]
       }
     }
   },
-  "icons": { "48": "icons/icon.svg" },
+  "icons": {
+    "48": "icons/icon.svg"
+  },
   "content_scripts": [
     {
-      "matches": ["*://news.ycombinator.com/*"],
-      "js": ["early.js"],
+      "matches": [
+        "*://news.ycombinator.com/*"
+      ],
+      "js": [
+        "early.js"
+      ],
       "run_at": "document_start"
     },
     {
-      "matches": ["*://news.ycombinator.com/*"],
-      "css": ["styles.css"],
-      "js": ["content.js"],
+      "matches": [
+        "*://news.ycombinator.com/*"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ]
