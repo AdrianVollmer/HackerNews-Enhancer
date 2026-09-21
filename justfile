@@ -37,8 +37,7 @@ pack: build
     cd hn-enhancer && zip -r "../dist/hn-enhancer-${version}.zip" .
 
 userscript: build
-    mkdir -p dist
-    python3 build_userscript.py dist/hn-enhancer.user.js
+    python3 scripts/build_userscript.py
 
 source:
     #!/usr/bin/env bash

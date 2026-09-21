@@ -5,10 +5,10 @@ import json
 import sys
 from pathlib import Path
 
-root = Path(__file__).parent
+root = Path(__file__).parent.parent
 
 
-def build(out_path: Path = root / "hn-enhancer.user.js") -> None:
+def build(out_path: Path = root / "dist" / "hn-enhancer.user.js") -> None:
     manifest = json.loads((root / "hn-enhancer/manifest.json").read_text())
     css = (root / "hn-enhancer/styles.css").read_text()
     early = (root / "hn-enhancer/early.js").read_text()
@@ -39,9 +39,10 @@ def build(out_path: Path = root / "hn-enhancer.user.js") -> None:
 }})();"""
 
     # content.js already contains its own DOMContentLoaded guard
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text("\n\n".join([header, preamble, content]))
     print(f"Written {out_path}")
 
 
 if __name__ == "__main__":
-    build(Path(sys.argv[1]) if len(sys.argv) > 1 else root / "hn-enhancer.user.js")
+    build(Path(sys.argv[1]) if len(sys.argv) > 1 else root / "dist" / "hn-enhancer.user.js")
