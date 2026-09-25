@@ -8,14 +8,18 @@ export function getDepth(tr: Element): number {
 }
 
 function parseAgeTitle(title: string): number {
-  // New format: "2026-08-23T08:32:39.000000Z" (ISO only)
+  // New format: "2026-09-25T10:34:13" or "2026-08-23T08:32:39.000000Z" (ISO only, UTC)
   // Old format: "2026-08-23T10:02:51 1787479371" (ISO + Unix timestamp)
   const parts = title.split(" ");
   if (parts.length >= 2) {
     const unix = parseInt(parts[1], 10);
     if (unix > 0) return unix;
   }
-  const ms = new Date(parts[0]).getTime();
+  // A date-time string with no timezone designator is parsed as local time by
+  // `Date`, but HN's ISO timestamps are always UTC. Force UTC by appending "Z"
+  // when no timezone designator is already present.
+  const iso = /[Zz]|[+-]\d{2}:?\d{2}$/.test(parts[0]) ? parts[0] : `${parts[0]}Z`;
+  const ms = new Date(iso).getTime();
   return ms > 0 ? Math.floor(ms / 1000) : 0;
 }
 

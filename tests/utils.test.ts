@@ -72,7 +72,17 @@ Deno.test("getTimestamp: old format (ISO + unix)", () => {
 
 Deno.test("getTimestamp: new format (ISO-Z only)", () => {
   const row = makeCommentRow("2026-08-23T08:32:39.000000Z");
-  assertEquals(getTimestamp(row), Math.floor(new Date("2026-08-23T08:32:39.000000Z").getTime() / 1000));
+  assertEquals(
+    getTimestamp(row),
+    Math.floor(new Date("2026-08-23T08:32:39.000000Z").getTime() / 1000),
+  );
+});
+
+Deno.test("getTimestamp: new format without Z is treated as UTC", () => {
+  // HN currently emits ISO timestamps with no timezone designator; these are
+  // UTC and must not be interpreted as local time.
+  const row = makeCommentRow("2026-09-25T10:34:13");
+  assertEquals(getTimestamp(row), Math.floor(new Date("2026-09-25T10:34:13Z").getTime() / 1000));
 });
 
 Deno.test("getTimestamp: missing span returns 0", () => {
